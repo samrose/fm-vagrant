@@ -165,10 +165,14 @@ This is done via
 
       vagrant up
 
+Then, run 
+      fab vagrant after
+
 Assuming that this did not encounter any port collisions you should be able to
 ssh into using the following
 
       ssh USERNAME@127.0.0.1 -p 2222
+ 
 
 ********************************************************************************
 "
