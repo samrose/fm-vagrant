@@ -7,3 +7,5 @@ if [ -e .vagrantfile ]
 fi
 rm Vagrantfile
 rm manifests/nodes.pp
+rm fabfile.py
+rm fabfile.pyc

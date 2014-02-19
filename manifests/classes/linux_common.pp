@@ -28,6 +28,9 @@ class linux_common {
 		ensure => installed,
 	}
 
+	package { curl:
+		ensure => installed,
+	}
 	file { "/etc/postfix/main.cf":
 		ensure => "file",
 		replace => true,

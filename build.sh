@@ -52,6 +52,7 @@ Vagrant::Config.run do |config|
   config.vm.host_name = '${vgrthostname}'
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.forward_port 80,3202
   config.vm.provision :shell, :inline => "/usr/bin/apt-get update"
   config.vm.provision :shell, :inline => "/usr/bin/apt-get install -y puppet libaugeas-ruby augeas-tools rubygems"
   config.vm.provision :puppet, :module_path => "modules", :options => "--verbose" do |puppet|
@@ -114,7 +115,48 @@ node "${vgrthostname}.${vgrtdomain}" {
 }
 
 EOF
+cat > fabfile.py << EOF
+from fabric.api import env, local, run
+from fabric.contrib import files
+ 
+def vagrant():
+    # change from the default user to 'vagrant'
+    env.user = 'vagrant'
+    # connect to the port-forwarded ssh
+    env.hosts = ['127.0.0.1:2222']
+ 
+    # use vagrant ssh key
+    result = local('vagrant ssh-config | grep IdentityFile', capture=True)
+    env.key_filename = result.split()[1]
 
+def adduser():    
+    run('sudo adduser ${vgrtuser} admin')
+ 
+def newuser():
+    # change from the default user to 'srose'
+    env.user = '${vgrtuser}'
+    # connect to the port-forwarded ssh
+    env.hosts = ['127.0.0.1:2222']
+ 
+    # use vagrant ssh key
+    result = local('vagrant ssh-config | grep IdentityFile', capture=True)
+    env.key_filename = result.split()[1]
+def uname():
+    run('uname -a')
+
+def after():
+    adduser()
+    newuser()
+    run('curl -sS https://getcomposer.org/installer | php')
+    run('sudo mv composer.phar /usr/local/bin/composer')
+    run('touch .bash_profile')
+    files.append('.bash_profile', 'PATH="\$HOME/.composer/vendor/bin:\$PATH"', use_sudo=False, partial=False, escape=True)
+    run('source .bash_profile')
+    run('composer')
+    run('composer global require drush/drush:6.*')
+    run('drush')
+
+EOF
 echo "
 ********************************************************************************
 You should now be ready to initialize your vagrant instance

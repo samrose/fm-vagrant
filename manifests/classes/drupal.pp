@@ -3,19 +3,6 @@ class drupal {
 	include fm_apache_php
 	include fm_compass
 
-	# install drush, we use this method over the ubuntu package as that requires
-	# a drush self-update that prompts for a version. This method uses drush's
-	# official pear channel.
-	exec { 'install drush':
-		command => '/usr/bin/pear channel-discover pear.drush.org && /usr/bin/pear install drush/drush',
-		require => Package['php-console-table'],
-		creates => '/usr/bin/drush'
-	}
-
-	package { 'php-console-table':
-		ensure => installed,
-		require => Package['php-pear']
-	}
 
 	# create the main web directory parent
 	file { "/var/www":
@@ -34,14 +21,6 @@ class drupal {
 		notify => Exec['reload apache']
 	}
 
-	# setup the crontab
-	# TODO: the path for drush may be different on lucid
-	cron { drupal:
-		command => "/usr/bin/drush -r ${fqdn} cron >/dev/null",
-		user    => www-data,
-		minute  => 0,
-		require => Exec['install drush']
-	}
 
 	# reload apache
 	exec {'reload apache':
