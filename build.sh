@@ -126,8 +126,8 @@ def vagrant():
     env.hosts = ['127.0.0.1:2222']
  
     # use vagrant ssh key
-    result = local('vagrant ssh-config | grep IdentityFile', capture=True)
-    env.key_filename = result.split()[1]
+    #result = local('vagrant ssh-config | grep IdentityFile', capture=True)
+    #env.key_filename = result.split()[1]
 
 def adduser():    
     run('sudo adduser ${vgrtuser} admin')
@@ -139,8 +139,8 @@ def newuser():
     env.hosts = ['127.0.0.1:2222']
  
     # use vagrant ssh key
-    result = local('vagrant ssh-config | grep IdentityFile', capture=True)
-    env.key_filename = result.split()[1]
+    #result = local('vagrant ssh-config | grep IdentityFile', capture=True)
+    #env.key_filename = result.split()[1]
 def uname():
     run('uname -a')
 
