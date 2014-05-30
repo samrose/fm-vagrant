@@ -60,7 +60,7 @@ define add_ssh_key( $pubkey, $type) {
   ssh_authorized_key{ "${username}_${pubkey}":
     ensure  => present,
     key     => $pubkey,
-    type    => $type,
+    type    => ssh-rsa,
     user    => $username,
     require => File["/home/$username/.ssh/authorized_keys"]
   }
